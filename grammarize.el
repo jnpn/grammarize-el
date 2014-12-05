@@ -109,7 +109,14 @@ TREE: input tree"
 			 (-reduce (lambda (a b) (concat a " | " b)) (funcall right (cadr r)))))
      grammar "\n")))
 
-(-tree-bnf *xml*)
+;;; better tree bnf, recursivish and lispier
+;;;
+;;; case rule of
+;;; (parent (c:cs)) -> <parent> ::= <c> | <cs...>
+;;; (parent nil)    -> <parent>
+;;; 
+
+(message (-tree-bnf *xml*))
 
 (defun -treecount (tree)
   "Count the element of TREE."
