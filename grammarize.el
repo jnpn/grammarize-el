@@ -55,7 +55,6 @@ TREE: input tree"
 
 (-map #'xml-descendancy (-walk #'xml-nodefn #'xml-childrenfn *xml*))
 
-(-walk #'xml-nodefn #'xml-childrenfn *xml*)
 (defun -treecount (tree)
   "Count the element of TREE."
   (apply #'+ (-walk (lambda (t) 1) #'xml-childrenfn tree)))
