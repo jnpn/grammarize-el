@@ -9,7 +9,8 @@
 (require 'dash)
 (require 'xml)
 
-(defvar *xml* (car (xml-parse-file "~/tree.xml")))
+(defvar *xml* (car (xml-parse-file "~/tree.xml")) "A test tree.")
+(defvar *xml* (car (xml-parse-file "~/tree2.xml")) "A test tree.")
 
 (defun -mapfilter (m f l)
   "Simple wrapper.
