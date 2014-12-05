@@ -53,7 +53,10 @@ TREE: input tree"
   (list :parent (xml-nodefn tree)
 	:children (-uniq (-map #'xml-node-name (xml-childrenfn tree)))))
 
-(-map #'xml-descendancy (-walk #'xml-nodefn #'xml-childrenfn *xml*))
+(-map #'xml-descendancy (-walk #'identity #'xml-childrenfn *xml*))
+
+;; ((:parent catalog :children (book mook)) (:parent book :children (author title genre price publish_date description)) (:parent author :children nil) (:parent title :children nil) (:parent genre :children nil) (:parent price :children nil) (:parent publish_date :children nil) (:parent description :children nil) (:parent mook :children (author title genre price publish_date description)) (:parent author :children nil) (:parent title :children nil) (:parent genre :children nil) ...)
+
 
 (defun -treecount (tree)
   "Count the element of TREE."
