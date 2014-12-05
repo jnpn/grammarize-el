@@ -73,6 +73,7 @@ TREE: input tree"
 ;;  (mook (:parent mook :children (author title genre price publish_date description)) (:parent mook :children (author title genre price publish_date description))) )
 
 (defun -tree-grammar (tree)
+  "Generate an abstract grammar from TREE."
  (-map
   (lambda (~d) (list (car ~d) (nth 3 (cadr ~d))))
   (-group-by
@@ -96,6 +97,7 @@ TREE: input tree"
 (mapconcat (lambda (r) (format "<%s> ::= %S" (car r) (cadr r))) (-tree-grammar *xml*) "\n")
 
 (defun -tree-bnf (tree)
+  "Generate a BNF grammar from TREE."
   (let* ((grammar (-tree-grammar tree))
 	 (terminal (-partial #'format "<%S>"))
 	 (right (lambda (terms)
