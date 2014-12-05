@@ -40,10 +40,11 @@ XML: input xml tree"
 (defun -walk (nf cf tree)
   "Tree walk, generic.
 NF: node mapping; CF: children mapping; TREE: input tree"
-  (append (list tree)
+  (append (list (@ nf tree))
 	  (-flatten-n 1 (-map (-partial #'-walk nf cf)
 		 (@ cf tree)))))
 
+(-each (-walk #'xml-nodefn #'xml-childrenfn *xml*) (-partial #'message "%s"))
 (-walk #'xml-nodefn #'xml-childrenfn *xml*)
 
 (defun xml-descendancy (tree)
