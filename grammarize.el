@@ -47,25 +47,6 @@ NF: node mapping; CF: children mapping; TREE: input tree"
 
 (-walk #'xml-nodefn #'xml-childrenfn *xml*)
 
-(catalog (book (author) (title) (genre) (price) (publish_date) (description))
-	 (mook (author) (title) (genre) (price) (publish_date) (description))
-	 (book (author) (title) (genre) (price) (publish_date) (description))
-	 (mook (author) (title) (genre) (price) (publish_date) (description)))
-
-;; (catalog
-;;  (book (author) (title) (genre) (price) (publish_date) (description))
-;;  (book (author) (title) (genre) (price) (publish_date) (description))
-;;  (book (author) (title) (genre) (price) (publish_date) (description))
-;;  (book (author) (title) (genre) (price) (publish_date) (description))
-;;  (book (author) (title) (genre) (price) (publish_date) (description))
-;;  (book (author) (title) (genre) (price) (publish_date) (description))
-;;  (book (author) (title) (genre) (price) (publish_date) (description))
-;;  (book (author) (title) (genre) (price) (publish_date) (description))
-;;  (book (author) (title) (genre) (price) (publish_date) (description))
-;;  (book (author) (title) (genre) (price) (publish_date) (description))
-;;  (book (author) (title) (genre) (price) (publish_date) (description))
-;;  ...)
-
 (defun xml-descendancy (tree)
   "Parent - Children relationship.
 TREE: input tree"
