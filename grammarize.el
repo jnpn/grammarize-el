@@ -195,6 +195,32 @@ re-ordering of cs from (| (| ...) ...) to (| ... (| ...)))"
 (-treecount *xml*)
 ;;; -> 29
 
+;;; Trep: Tree Grep
+
+(defun -trep (pred tree)
+  "Return the list of all nodes satisfying PRED in TREE."
+  (-filter pred (-walk #'identity #'xml-childrenfn tree)))
+
+(-trep (lambda (n) (eq (car n) 'book)) *xml*)
+
+(-trep (lambda (n) (or (eq (car n) 'book)
+		       (eq (car n) 'mook))) *xml*)
+
+(-trep (lambda (n) (eq (car n) 'title)) *xml*)
+
+;; ((title nil "XML Developer's Guide")
+;;  (title nil "Midnight Rain")
+;;  (title nil "Maeve Ascendant")
+;;  (title nil "Oberon's Legacy")
+;;  (title nil "The Sundered Grail")
+;;  (title nil "Lover Birds")
+;;  (title nil "Splish Splash")
+;;  (title nil "Creepy Crawlies")
+;;  (title nil "Paradox Lost")
+;;  (title nil "Microsoft .NET: The Programming Bible")
+;;  (title nil "MSXML3: A Comprehensive Guide")
+;;  (title nil "Visual Studio 7: A Comprehensive Guide"))
+
 ;;; Various Tests:
 
 (-map (-partial #'xml-nodefn)
