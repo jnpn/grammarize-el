@@ -129,6 +129,19 @@ TREE: input tree"
 
 (setq r0 '(body (div p pre span)))
 
+;;; Attempt at turning
+;;; (lambda (cs) (-reduce (lambda (r s) `(| ,r ,s)) (or cs (list nil))))
+;;; into stacked combinators using -->
+;;; 
+(--> '(em nil)
+  (or it '(nil))
+  (-reduce (lambda (r s) `(| ,s ,r)) it))
+
+(--> '(div (p span pre))
+  (or it '(nil))
+  (-reduce (lambda (r s) `(| ,s ,r)) it))
+
+
 (defun Rule-endo (rule)
   "Function to enter Rule domain from Lisp domain.  RULE in Lisp."
   (let ((p-endo (lambda (p c) `(Parent ,p ,c)))
