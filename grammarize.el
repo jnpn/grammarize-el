@@ -23,6 +23,11 @@ M : mapping; F: filter; L: input list"
 F : mapping; L: input list"
   (-flatten (-map f l)))
 
+(defun -group-by-with-count (f l)
+  "Wraps -group-by to add frequency of grouped item in F, L."
+  (let ((counter (lambda (group) (cons (car group) (length (cdr group))))))
+    (-map counter (-group-by (or f #'identity) l))))
+
 ;; (-map #'list (-range 10))
 ;; (-flatmap #'list (-range 10))
 
@@ -194,6 +199,16 @@ re-ordering of cs from (| (| ...) ...) to (| ... (| ...)))"
 
 (-treecount *xml*)
 ;;; -> 29
+
+(defun -tree-grammar-counted (tree)
+  "Generate an abstract grammar from TREE."
+ (-map
+  (lambda (~d) (list (car ~d) (nth 3 (cadr ~d))))
+  (-group-by-with-count
+   (lambda (d) (nth 1 d))
+   (-map #'xml-descendancy (-walk #'identity #'xml-childrenfn tree)))))
+
+(-tree-grammar-counted *xml*)
 
 ;;; Various Tests:
 
