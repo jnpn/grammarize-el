@@ -3,6 +3,7 @@
 ;;; Commentary:
 ;;; 
 ;;;  Tree -> Grammar
+;;;  Infers grammar through parent -> children relationships.
 ;;;
 ;;; Code:
 
