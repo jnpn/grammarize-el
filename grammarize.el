@@ -115,7 +115,76 @@ TREE: input tree"
 ;;; case rule of
 ;;; (parent (c:cs)) -> <parent> ::= <c> | <cs...>
 ;;; (parent nil)    -> <parent>
-;;; 
+;;;
+
+(defun -tree-bnf (tree)
+  (let ((g (-tree-grammar tree))
+	(| (lambda (cs) (mapconcat (-partial #'format "<%s>") cs " | ")))
+	(fmt (lambda (r)
+	       (pcase r
+		 ((parent (children)) (format "<%s> ::= %s" parent (| children)))
+		 ((parent nil) (format "<%s>" parent))))))))
+
+;;; Not Denotational enough
+
+(setq r0 '(body (div p pre span)))
+
+(defun Rule-endo (rule)
+  "Function to enter Rule domain from Lisp domain.  RULE in Lisp."
+  (let ((p-endo (lambda (p c) `(Parent ,p ,c)))
+	(c-endo (lambda (cs) (-reduce (lambda (r s) `(| ,r ,s)) (or cs (list nil))))))
+    (destructuring-bind (p cs) rule
+      (funcall p-endo p (funcall c-endo cs)))))
+
+(defun Rule-endo (rule)
+  "Function to enter Rule domain from Lisp domain.  RULE in Lisp.
+re-ordering of cs from (| (| ...) ...) to (| ... (| ...)))"
+  (let ((p-endo (lambda (p c) `(Parent ,p ,c)))
+	;; look at `(| ,s ,r) instead of `(| ,r ,s) for list nesting
+	(c-endo (lambda (cs) (-reduce (lambda (r s) `(| ,s ,r)) (or cs (list nil))))))
+    (destructuring-bind (p cs) rule
+      (funcall p-endo p (funcall c-endo cs)))))
+
+(Rule-endo r0)
+;;; -> (Parent body (| (| (| div p) pre) span))
+;;; nice.
+(-map #'Rule-endo (-tree-grammar *xml*))
+
+;; ((Parent catalog (| book mook))
+;;  (Parent book (| (| ... publish_date) description))
+;;  (Parent author nil)
+;;  (Parent title nil)
+;;  (Parent genre nil)
+;;  (Parent price nil)
+;;  (Parent publish_date nil)
+;;  (Parent description nil)
+;;  (Parent mook (| (| ... publish_date) description)))
+
+(defun BNF-endo (Rule)
+  "RULE -> Bnf."
+  (pcase Rule
+    (`(Parent ,p (,c . ,cs)) (format "<%s> ::= %s" p (BNF-endo (cons c cs))))
+    (`(Parent ,p nil)        (format "[%s]" p))
+    (`(| ,tag ,tags)	     (format "<%s> | %s" tag (BNF-endo tags)))
+    (tag		     (format "<%s>" tag))))
+
+(-map #'BNF-endo
+ (-map #'Rule-endo
+  (-tree-grammar *xml*)))
+
+(-map
+ (-compose #'BNF-endo #'Rule-endo)
+ (-tree-grammar *xml*))
+
+;; ("<catalog> ::= <mook> | <book>"
+;;  "<book> ::= <description> | <publish_date> | <price> | <genre> | <title> | <author>"
+;;  "[author]"
+;;  "[title]"
+;;  "[genre]"
+;;  "[price]"
+;;  "[publish_date]"
+;;  "[description]"
+;;  "<mook> ::= <description> | <publish_date> | <price> | <genre> | <title> | <author>")
 
 (message (-tree-bnf *xml*))
 
