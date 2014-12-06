@@ -163,9 +163,9 @@ re-ordering of cs from (| (| ...) ...) to (| ... (| ...)))"
 (defun BNF-endo (Rule)
   "RULE -> Bnf."
   (pcase Rule
-    (`(Parent ,p (,c . ,cs)) (format "<%s> ::= %s" p (BNF-endo (cons c cs))))
-    (`(Parent ,p nil)        (format "[%s]" p))
-    (`(| ,tag ,tags)	     (format "<%s> | %s" tag (BNF-endo tags)))
+    (`(Parent ,p (,c . ,cs)) (format "%s ::= %s" (BNF-endo p) (BNF-endo (cons c cs))))
+    (`(Parent ,p nil)        (BNF-endo p))
+    (`(| ,tag ,tags)	     (format "%s | %s" (BNF-endo tag) (BNF-endo tags)))
     (tag		     (format "<%s>" tag))))
 
 (-map #'BNF-endo
