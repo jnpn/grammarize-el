@@ -51,35 +51,38 @@ NF: node mapping; CF: children mapping; TREE: input tree"
 (defun xml-descendancy (tree)
   "Parent - Children relationship.
 TREE: input tree"
-  (list :parent (xml-nodefn tree)
-	:children (-uniq (-map #'xml-node-name (xml-childrenfn tree)))))
+  (list (xml-nodefn tree)
+	(-uniq (-map #'xml-node-name (xml-childrenfn tree)))))
 
 (-map #'xml-descendancy (-walk #'identity #'xml-childrenfn *xml*))
 
-;; ((:parent catalog :children (book mook)) (:parent book :children (author title genre price publish_date description)) (:parent author :children nil) (:parent title :children nil) (:parent genre :children nil) (:parent price :children nil) (:parent publish_date :children nil) (:parent description :children nil) (:parent mook :children (author title genre price publish_date description)) (:parent author :children nil) (:parent title :children nil) (:parent genre :children nil) ...)
+;; ((catalog (book mook))
+;;  (book (author title genre price publish_date description))
+;;  (author nil)
+;;  (title nil)
+;;  (genre nil)
+;;  (price nil)
+;;  (publish_date nil)
+;;  (description nil)
+;;  (mook (author title genre price publish_date description))
+;;  (author nil)
+;;  (title nil)
+;;  (genre nil)
+;;  ...)
 
 (-group-by
- ;; (lambda (d0 d1) (eq (nth 1 d0) (nth 1 d1)))
- (lambda (d) (nth 1 d))
+ #'first
  (-map #'xml-descendancy (-walk #'identity #'xml-childrenfn *xml*)))
 
-;; ((catalog (:parent catalog :children (book mook)))
-;;  (book (:parent book :children (author title genre price publish_date description)) (:parent book :children (author title genre price publish_date description)))
-;;  (author (:parent author :children nil) (:parent author :children nil) (:parent author :children nil) (:parent author :children nil))
-;;  (title (:parent title :children nil) (:parent title :children nil) (:parent title :children nil) (:parent title :children nil))
-;;  (genre (:parent genre :children nil) (:parent genre :children nil) (:parent genre :children nil) (:parent genre :children nil))
-;;  (price (:parent price :children nil) (:parent price :children nil) (:parent price :children nil) (:parent price :children nil))
-;;  (publish_date (:parent publish_date :children nil) (:parent publish_date :children nil) (:parent publish_date :children nil) (:parent publish_date :children nil))
-;;  (description (:parent description :children nil) (:parent description :children nil) (:parent description :children nil) (:parent description :children nil))
-;;  (mook (:parent mook :children (author title genre price publish_date description)) (:parent mook :children (author title genre price publish_date description))) )
+;; ((catalog (catalog (book mook))) (book (book (author title genre price publish_date description)) (book (author title genre price publish_date description)) (book (author title genre price publish_date description)) (book (author title genre price publish_date description)) (book (author title genre price publish_date description)) (book (author title genre price publish_date description)) (book (author title genre price publish_date description))) (author (author nil) (author nil) (author nil) (author nil) (author nil) (author nil) (author nil) (author nil) (author nil) (author nil) (author nil) ...) (title (title nil) (title nil) (title nil) (title nil) (title nil) (title nil) (title nil) (title nil) (title nil) (title nil) (title nil) ...) (genre (genre nil) (genre nil) (genre nil) (genre nil) (genre nil) (genre nil) (genre nil) (genre nil) (genre nil) (genre nil) (genre nil) ...) (price (price nil) (price nil) (price nil) (price nil) (price nil) (price nil) (price nil) (price nil) (price nil) (price nil) (price nil) ...) (publish_date (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) ...) (description (description nil) (description nil) (description nil) (description nil) (description nil) (description nil) (description nil) (description nil) (description nil) (description nil) (description nil) ...) (mook (mook (author title genre price publish_date description)) (mook (author title genre price publish_date description)) (mook (author title genre price publish_date description)) (mook (author title genre price publish_date description)) (mook (author title genre price publish_date description))))
 
 (defun -tree-grammar (tree)
   "Generate an abstract grammar from TREE."
- (-map
-  (lambda (~d) (list (car ~d) (nth 3 (cadr ~d))))
-  (-group-by
-   (lambda (d) (nth 1 d))
-   (-map #'xml-descendancy (-walk #'identity #'xml-childrenfn tree)))))
+  (let ((ungroup #'second)
+	(by-parent #'first)
+	(nodes (-map #'xml-descendancy (-walk #'identity #'xml-childrenfn tree))))
+    (-map #'ungroup
+	  (-group-by by-parent nodes))))
 
 (-tree-grammar *xml*)
 
