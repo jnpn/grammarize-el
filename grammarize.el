@@ -201,7 +201,7 @@ re-ordering of cs from (| (| ...) ...) to (| ... (| ...)))"
 ;;  "[description]"
 ;;  "<mook> ::= <description> | <publish_date> | <price> | <genre> | <title> | <author>")
 
-(message (-tree-bnf *xml*))
+(message (-tree-bnf *xml*)) ; ∎
 
 (defun -treecount (tree)
   "Count the element of TREE."
