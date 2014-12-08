@@ -78,11 +78,10 @@ TREE: input tree"
 
 (defun -tree-grammar (tree)
   "Generate an abstract grammar from TREE."
-  (let ((ungroup #'second)
-	(by-parent #'first)
-	(nodes (-map #'xml-descendancy (-walk #'identity #'xml-childrenfn tree))))
-    (-map #'ungroup
-	  (-group-by by-parent nodes))))
+  (-map #'second
+	(-group-by #'first
+		   (-map #'xml-descendancy
+			 (-walk #'identity #'xml-childrenfn tree)))))
 
 (-tree-grammar *xml*)
 
