@@ -236,6 +236,10 @@ re-ordering of cs from (| (| ...) ...) to (| ... (| ...)))"
 ;;  (title nil "MSXML3: A Comprehensive Guide")
 ;;  (title nil "Visual Studio 7: A Comprehensive Guide"))
 
+(defun -treeduce (t n c f)
+  "Function T N C, F :: Tree a -> [b] -> b."
+  (funcall f (funcall n t) (-map #'-treeduce (funcall c t))))
+
 ;;; Various Tests:
 
 (-map (-partial #'xml-nodefn)
