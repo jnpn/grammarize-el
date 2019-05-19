@@ -10,6 +10,7 @@
 (require 'dash)
 (require 'xml)
 
+(defvar *xml* (car (xml-parse-file "./tree.xml")) "A test tree.")
 (defvar *xml* (car (xml-parse-file "~/tree.xml")) "A test tree.")
 (defvar *xml* (car (xml-parse-file "~/tree2.xml")) "A test tree.")
 
@@ -73,6 +74,18 @@ TREE: input tree"
 (-group-by
  #'first
  (-map #'xml-descendancy (-walk #'identity #'xml-childrenfn *xml*)))
+;;((root (root (main)))
+;; (main (main (b a c)))
+;; (b (b (foo)) (b (duh)) (b (eww)))
+;; (foo (foo nil) (foo nil))
+;; (duh (duh nil) (duh nil))
+;; (eww (eww nil))
+;; (a (a (foo)))
+;; (c (c (duh))))
+
+(-group-by
+ #'first
+ '((a b) (a c)))
 
 ;; ((catalog (catalog (book mook))) (book (book (author title genre price publish_date description)) (book (author title genre price publish_date description)) (book (author title genre price publish_date description)) (book (author title genre price publish_date description)) (book (author title genre price publish_date description)) (book (author title genre price publish_date description)) (book (author title genre price publish_date description))) (author (author nil) (author nil) (author nil) (author nil) (author nil) (author nil) (author nil) (author nil) (author nil) (author nil) (author nil) ...) (title (title nil) (title nil) (title nil) (title nil) (title nil) (title nil) (title nil) (title nil) (title nil) (title nil) (title nil) ...) (genre (genre nil) (genre nil) (genre nil) (genre nil) (genre nil) (genre nil) (genre nil) (genre nil) (genre nil) (genre nil) (genre nil) ...) (price (price nil) (price nil) (price nil) (price nil) (price nil) (price nil) (price nil) (price nil) (price nil) (price nil) (price nil) ...) (publish_date (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) (publish_date nil) ...) (description (description nil) (description nil) (description nil) (description nil) (description nil) (description nil) (description nil) (description nil) (description nil) (description nil) (description nil) ...) (mook (mook (author title genre price publish_date description)) (mook (author title genre price publish_date description)) (mook (author title genre price publish_date description)) (mook (author title genre price publish_date description)) (mook (author title genre price publish_date description))))
 
@@ -240,7 +253,16 @@ re-ordering of cs from (| (| ...) ...) to (| ... (| ...)))"
   "Function T N C, F :: Tree a -> [b] -> b."
   (funcall f (funcall n t) (-map #'-treeduce (funcall c t))))
 
-;;; Various Tests:
+(defun -treefold (tree one more)
+  "Fold TREE ONE MORE.
+see : http://web.cecs.pdx.edu/~sheard/course/funprog/lecturenotes/lect07.html"
+  (cond ((leafp tree) (funcall one tree))
+	((morep tree) (-reduce #'more (funcall children tree)))))
+
+(-treefold #'list #'append) ;; walk
+(-treefold 1 #'+) ;; count
+
+;;; Tests:
 
 (-map (-partial #'xml-nodefn)
       (-filter #'consp
