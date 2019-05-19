@@ -1,0 +1,9 @@
+<root>
+  <main>
+    <b><foo>@k</foo></b>
+    <b><duh>@</duh></b>
+    <b><eww>@</eww></b>
+    <a><foo>@</foo></a>
+    <c><duh>@</duh></c>
+  </main>
+</root>
